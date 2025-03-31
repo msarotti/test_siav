@@ -1,0 +1,22 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <title>Aggiungi Libro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="p-8">
+    <h1 class="text-2xl font-bold mb-4">Aggiungi Libro</h1>
+    <form method="post" class="bg-gray-100 p-6 rounded shadow">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit"
+            class="bg-blue-500 text-white px-4 py-2 rounded">Salva</button>
+    </form>
+    <a href="{% url 'book_list' %}" class="block mt-4 text-blue-500">Torna alla
+        lista</a>
+</body>
+
+</html>
