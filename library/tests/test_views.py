@@ -31,14 +31,14 @@ class ImportBooksViewTest(TestCase):
                         "anno edizione": "1954"
                     },
                 ],
-                "autori": [
+            "autori": [
                     {
                         "id": 1,
                         "nome": "J.R.R.",
                         "cognome": "Tolkien"
                     },
                 ],
-                "editori": [
+            "editori": [
                     {
                         "id": 1,
                         "ragione sociale": "Editor",

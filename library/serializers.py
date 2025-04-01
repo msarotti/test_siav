@@ -26,3 +26,8 @@ class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = ['id', 'title', 'author', 'publisher', 'year']
+
+    def to_internal_value(self, data):
+        if isinstance(data.get('author'), int):
+            data['author'] = [data['author']]
+        return super().to_internal_value(data)
