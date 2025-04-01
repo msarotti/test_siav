@@ -1,6 +1,6 @@
-import json
 from .models import Book, Author, Publisher
 from django.core.exceptions import ObjectDoesNotExist
+
 
 def import_books_from_json(data):
     for author_data in data.get('autori', []):
@@ -34,5 +34,5 @@ def import_books_from_json(data):
             authors = Author.objects.filter(id=author_id)
             book.author.set(authors)
         except ObjectDoesNotExist:
-            print(f"Error importing books")
+            print("Error importing books")
             continue

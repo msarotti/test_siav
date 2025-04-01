@@ -20,6 +20,7 @@ packages = [{include = "biblio", from = "src"}]
 
 [tool.poetry.group.dev.dependencies]
 debugpy = "^1.8.13"
+flake8 = "^7.2.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

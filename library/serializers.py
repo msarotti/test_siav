@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Book, Author, Publisher
 
+
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
@@ -14,8 +15,13 @@ class PublisherSerializer(serializers.ModelSerializer):
 
 
 class BookSerializer(serializers.ModelSerializer):
-    author = serializers.PrimaryKeyRelatedField(queryset=Author.objects.all())
-    publisher = serializers.PrimaryKeyRelatedField(queryset=Publisher.objects.all())
+    author = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Author.objects.all()
+        )
+    publisher = serializers.PrimaryKeyRelatedField(
+        queryset=Publisher.objects.all()
+        )
 
     class Meta:
         model = Book

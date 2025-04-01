@@ -1,48 +1,92 @@
 from django.test import TestCase
-from rest_framework.exceptions import ValidationError
-from library.models import Book, Author, Publisher
-from ..serializers import BookSerializer
+from ..models import Book, Author, Publisher
+from ..serializers import AuthorSerializer, PublisherSerializer, BookSerializer
 
 
-class TestBookSerializer(TestCase):
-
+class AuthorSerializerTest(TestCase):
     def setUp(self):
-        self.valid_author = Author.objects.create(
-            first_name='John',
-            last_name='Doe'
+        self.author = Author.objects.create(
+            first_name="Test Name",
+            last_name="Test Name"
+            )
+        self.serializer = AuthorSerializer(instance=self.author)
+
+    def test_contains_expected_fields(self):
+        data = self.serializer.data
+        self.assertCountEqual(data.keys(), ['id', 'first_name', 'last_name'])
+
+    def test_field_content(self):
+        data = self.serializer.data
+        self.assertEqual(data['first_name'], "Test Name")
+        self.assertEqual(data['last_name'], "Test Name")
+
+
+class PublisherSerializerTest(TestCase):
+    def setUp(self):
+        self.publisher = Publisher.objects.create(
+            name="Test Editor",
+            address="Via test 123",
+            phone="123456789"
+            )
+        self.serializer = PublisherSerializer(instance=self.publisher)
+
+    def test_contains_expected_fields(self):
+        data = self.serializer.data
+        self.assertCountEqual(data.keys(), ['id', 'name', 'address', 'phone'])
+
+    def test_field_content(self):
+        data = self.serializer.data
+        self.assertEqual(data['name'], "Test Editor")
+        self.assertEqual(data['address'], "Via test 123")
+        self.assertEqual(data['phone'], "123456789")
+
+
+class BookSerializerTest(TestCase):
+    def setUp(self):
+        self.author = Author.objects.create(
+            first_name="Test Name",
+            last_name="Test Name"
         )
-        self.valid_author_id = self.valid_author.id
-        self.valid_publisher = Publisher.objects.create(
-            name='Test Publisher',
-            address='123 Test St',
-            phone='1234567890'
+        self.publisher = Publisher.objects.create(
+            name="Test Editor",
+            address="Via test 123",
+            phone="123456789"
         )
-        self.valid_publisher_id = self.valid_publisher.id
+        self.book = Book.objects.create(
+            title="Test Book",
+            publisher=self.publisher,
+            year=2025
+        )
+        self.book.author.add(self.author)
+        self.serializer = BookSerializer(instance=self.book)
 
-        self.valid_data = {
-            'id': 1,
-            'title': 'Test Book',
-            'author': self.valid_author_id,
-            'publisher': self.valid_publisher_id,
-            'year': 2023
+    def test_contains_expected_fields(self):
+        data = self.serializer.data
+        self.assertCountEqual(
+            data.keys(),
+            ['id', 'title', 'author', 'publisher', 'year']
+        )
+
+    def test_field_content(self):
+        data = self.serializer.data
+        self.assertEqual(data['title'], "Test Book")
+        self.assertEqual(
+            [str(author) for author in self.book.author.all()],
+            ["Test Name Test Name"]
+        )
+        self.assertEqual(data['publisher'], self.publisher.id)
+        self.assertEqual(data['year'], 2025)
+
+    def test_invalid_data(self):
+        invalid_data = {
+            'title': '',
+            'author': None,
+            'publisher': None,
+            'year': 'invalid'
         }
-
-        self.invalid_data_missing_fields = {
-            'title': 'Test Book',
-            'year': 2023
-        }
-
-
-    def test_valid_data_serialization(self):
-        serializer = BookSerializer(data=self.valid_data)
-        self.assertTrue(serializer.is_valid())
-        self.assertEqual(serializer.validated_data['title'], self.valid_data['title'])
-        self.assertEqual(serializer.validated_data['author'], self.valid_author)
-        self.assertEqual(serializer.validated_data['publisher'], self.valid_publisher)
-        self.assertEqual(serializer.validated_data['year'], self.valid_data['year'])
-
-    def test_invalid_data_missing_fields(self):
-        serializer = BookSerializer(data=self.invalid_data_missing_fields)
+        serializer = BookSerializer(data=invalid_data)
         self.assertFalse(serializer.is_valid())
+        self.assertIn('title', serializer.errors)
         self.assertIn('author', serializer.errors)
         self.assertIn('publisher', serializer.errors)
+        self.assertIn('year', serializer.errors)
