@@ -7,6 +7,7 @@ from .forms import ImportJSONForm
 from django.contrib import messages
 import json
 from library.utils import import_books_from_json
+from django.core.paginator import Paginator
 
 
 class BookListView(ListView):
@@ -14,7 +15,15 @@ class BookListView(ListView):
     template_name = 'library/book_list.html'
     context_object_name = 'books'
     ordering = ['title']
+    paginate_by = 10  # Number of books per page
 
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     paginator = Paginator(self.get_queryset(), self.paginate_by)
+    #     page_number = self.request.GET.get('page')
+    #     page_obj = paginator.get_page(page_number)
+    #     context['page_obj'] = page_obj
+    #     return context
 
 class ImportBooksView(FormView):
     template_name = 'library/import_books.html'

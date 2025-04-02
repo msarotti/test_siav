@@ -31,6 +31,19 @@
             {% endfor %}
         </tbody>
     </table>
+    <div class="mt-4">
+        <span class="text-gray-600">Page {{ page_obj.number }}</span>
+        <div class="flex justify-center mt-2">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}"
+                class="px-4 py-2 bg-blue-500 text-white rounded">Previous</a>
+            {% endif %}
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}"
+                class="px-4 py-2 bg-blue-500 text-white rounded ml-2">Next</a>
+            {% endif %}
+        </div>
+    </div>
 </body>
 
 </html>
